@@ -3,24 +3,34 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: cimg/node:stable
+      - image: circleci/node:13.8.0
     steps:
       - checkout
+      - run: npm install
+      - save_cache:
+          key: "npm-packages"
+          paths:
+            - /src/node_modules
       - run: npm run lint
 
   test:
     docker:
-      - image: cimg/node:stable
+      - image: circleci/node:13.8.0
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - "npm-packages"
+      - run: npm install
       - run: npm run test
 
   analyze:
     docker:
-      - image: cimg/node:18.7
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - run: npm audit
+
 
 workflows:
   build_stage:
